@@ -78,21 +78,6 @@ def on_predicate(wait_gen,
         on_giveup_ = _config_handlers(on_giveup, _log_giveup, logger_)
 
         retry = None
-        if sys.version_info >= (3, 5):  # pragma: python=3.5
-            import asyncio
-
-            if asyncio.iscoroutinefunction(target):
-                import backoff._async
-                retry = backoff._async.retry_predicate
-
-            elif _is_event_loop() and _is_current_task():
-                # Verify that sync version is not being run from coroutine
-                # (that would lead to event loop hiccups).
-                raise TypeError(
-                    "backoff.on_predicate applied to a regular function "
-                    "inside coroutine, this will lead to event loop "
-                    "hiccups. Use backoff.on_predicate on coroutines in "
-                    "asynchronous code.")
 
         if retry is None:
             retry = _sync.retry_predicate
@@ -168,20 +153,6 @@ def on_exception(wait_gen,
         on_giveup_ = _config_handlers(on_giveup, _log_giveup, logger_)
 
         retry = None
-        if sys.version_info[:2] >= (3, 5):   # pragma: python=3.5
-            import asyncio
-
-            if asyncio.iscoroutinefunction(target):
-                import backoff._async
-                retry = backoff._async.retry_exception
-            elif _is_event_loop() and _is_current_task():
-                # Verify that sync version is not being run from coroutine
-                # (that would lead to event loop hiccups).
-                raise TypeError(
-                    "backoff.on_exception applied to a regular function "
-                    "inside coroutine, this will lead to event loop "
-                    "hiccups. Use backoff.on_exception on coroutines in "
-                    "asynchronous code.")
 
         if retry is None:
             retry = _sync.retry_exception
